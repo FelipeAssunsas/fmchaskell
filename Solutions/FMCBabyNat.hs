@@ -1,30 +1,31 @@
--- Formal Methods in Computing
--- Fall 2025, BIU
--- Exercise on BabyNat
-
--- name: 
+-- name: Felipe Assunção
 -- id:
 
 module FMCBabyNat where
+import GHC.Num (naturalBit)
 
--- In this exercise you will implement a few functions on a very simple
--- representation of natural numbers.
--- This representation is called "Peano numbers".
--- This is how you would define them in Coq, for example:
--- Inductive nat : Type :=
---  | O : nat
---  | S : nat -> nat.
-
--- In Haskell we can use the following definition:
 data BabyNat = O | S BabyNat deriving (Show,Eq)
+
+zero = O
+one = S O
+two = S(S O)
+three = S two
+four = S three
+five = S four
+six = S five
+seven = S six
+eight = S seven
+nine = S eight
+ten = S nine
+
+
+
 
 -- This definition says that a BabyNat can be one of two things:
 -- 1. The constructor "O" (representing zero)
 -- 2. The constructor "S" applied to another BabyNat (representing the successor function)
 
 -- For example, the number 3 would be represented as:
-three :: BabyNat
-three = S (S (S O))
 
 -- The number 0 is just O.
 -- The number 1 is S O.
