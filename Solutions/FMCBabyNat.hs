@@ -1,72 +1,115 @@
--- name: Felipe Assunção
--- id:
-
 module FMCBabyNat where
-import GHC.Num (naturalBit)
 
-data BabyNat = O | S BabyNat deriving (Show,Eq)
+-- Do not alter this import!
+import Prelude ( Show(..) , Eq(..) , undefined )
 
+-- Define evenerything that is undefined,
+-- without using standard Haskell functions.
+-- (Hint: recursion is your friend!)
+
+-- define a new data type called Nat by listing all forms
+data Nat = O | S Nat
+  deriving (Eq, Show)
+
+-- some sugar
+zero, one, two, three, four, five, six, seven, eight :: Nat
 zero = O
-one = S O
-two = S(S O)
+one = S zero
+two = S one
 three = S two
 four = S three
 five = S four
 six = S five
 seven = S six
 eight = S seven
-nine = S eight
-ten = S nine
+
+-- addition
+(+) :: Nat -> Nat -> Nat
+n + O   = n
+n + S m = S (n + m)
+
+
+ -- syntactic associativity: L
+ -- syntactic precedence: 6
+infixl 6 +
+
+-- Output: O means False, S O means True
+isZero :: Nat -> Nat
+isZero  O = S O
+isZero (S n) = O
 
 
 
 
--- This definition says that a BabyNat can be one of two things:
--- 1. The constructor "O" (representing zero)
--- 2. The constructor "S" applied to another BabyNat (representing the successor function)
+-- pred is the predecessor but we define zero's to be zero
+pred :: Nat -> Nat
+pred O = O
+pred (S n) = n
 
--- For example, the number 3 would be represented as:
+-- Output: O means False, S O means True
+even :: Nat -> Nat
+even O = S O
+even (S O) = O 
+even (S (S n)) = even n  
 
--- The number 0 is just O.
--- The number 1 is S O.
--- The number 2 is S (S O).
--- etc.
 
--- The first part of the exercise is to implement some basic functions on BabyNats.
--- You can use pattern matching to deconstruct the BabyNat.
--- For example, to define a function f:
--- f O = ...
--- f (S n) = ...
--- where in the second case "n" is the BabyNat to which S was applied.
+odd :: Nat -> Nat
+odd (S O) = S O
+odd O = S O
+odd (S n) = odd n
 
--- TODO: Implement the following functions.
--- You can use "undefined" as a placeholder for the parts you haven't implemented yet.
+-- This is called the dotminus or monus operator
+-- (also: proper subtraction, arithmetic subtraction, ...).
+-- It behaves like subtraction, except that it returns 0
+-- when "normal" subtraction would return a negative number.
+monus :: Nat -> Nat -> Nat
+monus = 
 
--- convert a BabyNat to an Integer
-babyNatToInteger :: BabyNat -> Integer
-babyNatToInteger O = 0
-babyNatToInteger (S n) = 1 + babyNatToInteger n
+(-*) :: Nat -> Nat -> Nat
+(-*) = monus
 
--- convert an Integer to a BabyNat
--- (bonus: throw an error for negative integers)
-integerToBabyNat :: Integer -> BabyNat
-integerToBabyNat 0 = O
-integerToBabyNat n = S (integerToBabyNat (n-1))
+-- multiplication
+(*) :: Nat -> Nat -> Nat
+(*) = undefined
 
--- add two BabyNats
-add :: BabyNat -> BabyNat -> BabyNat
-add O m = m
-add (S n) m = S (add n m)
+infixl 7 *
 
--- multiply two BabyNats
-mult :: BabyNat -> BabyNat -> BabyNat
-mult O m = O
-mult (S n) m = add m (mult n m)
+-- exponentiation
+(^) :: Nat -> Nat -> Nat
+(^) = undefined
 
--- The following are a few test cases.
--- You can run "cabal test" to run them.
--- (I will use a different set of tests to grade your submission)
-prop_add_O_r m = add m O == m
-prop_add_S_r m n = add m (S n) == S (add m n)
-prop_mult_O_r m = mult m O == O
-prop_mult_S_r m n = mult m (S n) == add m (mult m n)
+-- decide: infix? ? ^
+
+-- quotient
+(/) :: Nat -> Nat -> Nat
+(/) = undefined
+
+-- remainder
+(%) :: Nat -> Nat -> Nat
+(%) = undefined
+
+-- divides
+-- just for a change, we start by defining the "symbolic" operator
+-- and then define `devides` as a synonym to it
+-- again, outputs: O means False, S O means True
+(|||) :: Nat -> Nat -> Nat
+(|||) = undefined
+
+-- x `absDiff` y = |x - y|
+-- (Careful here: this - is the actual minus operator we know from the integers!)
+absDiff :: Nat -> Nat -> Nat
+absDiff = undefined
+
+(|-|) :: Nat -> Nat -> Nat
+(|-|) = absDiff
+
+factorial :: Nat -> Nat
+factorial = undefined
+
+-- signum of a number (-1, 0, or 1)
+sg :: Nat -> Nat
+sg = undefined
+
+-- lo b a is the floor of the logarithm base b of a
+lo :: Nat -> Nat -> Nat
+lo = undefined
