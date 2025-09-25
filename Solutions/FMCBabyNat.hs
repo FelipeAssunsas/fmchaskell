@@ -39,8 +39,6 @@ isZero  O = S O
 isZero (S n) = O
 
 
-
-
 -- pred is the predecessor but we define zero's to be zero
 pred :: Nat -> Nat
 pred O = O
@@ -57,36 +55,53 @@ odd :: Nat -> Nat
 odd (S O) = S O
 odd O = S O
 odd (S n) = odd n
-
 -- This is called the dotminus or monus operator
 -- (also: proper subtraction, arithmetic subtraction, ...).
 -- It behaves like subtraction, except that it returns 0
 -- when "normal" subtraction would return a negative number.
-monus :: Nat -> Nat -> Nat
-monus = 
+
 
 (-*) :: Nat -> Nat -> Nat
-(-*) = monus
+ n -* O = n
+ O -* n = O
+ S n -* S m = n -* m
+
+monus :: Nat -> Nat -> Nat
+monus = (-*)
 
 -- multiplication
 (*) :: Nat -> Nat -> Nat
-(*) = undefined
+(*) n * O = O
+(*) n * S m = n * m + n 
+
 
 infixl 7 *
 
 -- exponentiation
 (^) :: Nat -> Nat -> Nat
-(^) = undefined
+(^) n ^ O = S O
+(^) n ^ S m = n ^ m * n
+
 
 -- decide: infix? ? ^
 
+-- >=
+(>=) :: Nat -> Nat -> Nat
+n >= O = S O
+O >= S n = O
+S n >= S m = n >= m
+
 -- quotient
 (/) :: Nat -> Nat -> Nat
-(/) = undefined
+n / O = undefined
+n / m =
+  case n >= m of
+    O -> O
+    S O -> S ((n -* m)/m)
 
 -- remainder
 (%) :: Nat -> Nat -> Nat
-(%) = undefined
+(%) 
 
 -- divides
 -- just for a change, we start by defining the "symbolic" operator
