@@ -1,7 +1,7 @@
 module FMCBabyNat where
 
 -- Do not alter this import!
-import Prelude ( Show(..) , Eq(..) , undefined )
+import Prelude ( Show(..) , Eq(..) , undefined, Num (negate) )
 
 -- Define evenerything that is undefined,
 -- without using standard Haskell functions.
@@ -13,13 +13,13 @@ data Nat = O | S Nat
 
 -- some sugar
 zero, one, two, three, four, five, six, seven, eight :: Nat
-zero = O
-one = S zero
-two = S one
+zero  = O
+one   = S zero
+two   = S one
 three = S two
-four = S three
-five = S four
-six = S five
+four  = S three
+five  = S four
+six   = S five
 seven = S six
 eight = S seven
 
@@ -28,16 +28,14 @@ eight = S seven
 n + O   = n
 n + S m = S (n + m)
 
-
  -- syntactic associativity: L
  -- syntactic precedence: 6
 infixl 6 +
 
 -- Output: O means False, S O means True
 isZero :: Nat -> Nat
-isZero  O = S O
-isZero (S n) = O
-
+isZero O = S O
+isZero (S _) = O
 
 -- pred is the predecessor but we define zero's to be zero
 pred :: Nat -> Nat
@@ -47,14 +45,14 @@ pred (S n) = n
 -- Output: O means False, S O means True
 even :: Nat -> Nat
 even O = S O
-even (S O) = O 
-even (S (S n)) = even n  
+even (S O) = O
+even (S (S n)) = even n
 
 
 odd :: Nat -> Nat
+odd O = O
 odd (S O) = S O
-odd O = S O
-odd (S n) = odd n
+odd (S (S n)) = odd n
 -- This is called the dotminus or monus operator
 -- (also: proper subtraction, arithmetic subtraction, ...).
 -- It behaves like subtraction, except that it returns 0
@@ -62,26 +60,29 @@ odd (S n) = odd n
 
 
 (-*) :: Nat -> Nat -> Nat
- n -* O = n
- O -* n = O
- S n -* S m = n -* m
+n -* O = n
+O -* n = O
+S n -* S m = n -* m
+
+infixl 6 -*
 
 monus :: Nat -> Nat -> Nat
 monus = (-*)
 
+
 -- multiplication
 (*) :: Nat -> Nat -> Nat
-(*) n * O = O
-(*) n * S m = n * m + n 
-
+_ * O = O
+n * S m = n * m + n
 
 infixl 7 *
 
 -- exponentiation
 (^) :: Nat -> Nat -> Nat
-(^) n ^ O = S O
-(^) n ^ S m = n ^ m * n
+n ^ O = one
+n ^ S m = n ^ m * n
 
+infixr 8 ^
 
 -- decide: infix? ? ^
 
@@ -99,9 +100,12 @@ n / m =
     O -> O
     S O -> S ((n -* m)/m)
 
+
+infixl 7 /
+
 -- remainder
 (%) :: Nat -> Nat -> Nat
-(%) 
+(%) = undefined
 
 -- divides
 -- just for a change, we start by defining the "symbolic" operator
@@ -112,11 +116,13 @@ n / m =
 
 -- x `absDiff` y = |x - y|
 -- (Careful here: this - is the actual minus operator we know from the integers!)
+
 absDiff :: Nat -> Nat -> Nat
-absDiff = undefined
+absDiff = (|-|)
 
 (|-|) :: Nat -> Nat -> Nat
-(|-|) = absDiff
+(|-|) = undefined
+
 
 factorial :: Nat -> Nat
 factorial = undefined
@@ -128,3 +134,5 @@ sg = undefined
 -- lo b a is the floor of the logarithm base b of a
 lo :: Nat -> Nat -> Nat
 lo = undefined
+
+infixr 8 `lo`
