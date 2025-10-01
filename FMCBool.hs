@@ -33,7 +33,6 @@ instance Enum Bool where
 
     toEnum 0 = False
     toEnum 1 = True
-    -- toEnum _ = error "Invalid value for Bool" -- Opcional: tratar outros casos
 
     fromEnum False = 0
     fromEnum True = 1
