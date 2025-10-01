@@ -3,11 +3,6 @@ module FMCBabyNat where
 -- Do not alter this import!
 import Prelude ( Show(..) , Eq(..) , undefined, Num (negate) )
 
--- Define evenerything that is undefined,
--- without using standard Haskell functions.
--- (Hint: recursion is your friend!)
-
--- define a new data type called Nat by listing all forms
 data Nat = O | S Nat
   deriving (Eq, Show)
 
@@ -28,11 +23,9 @@ eight = S seven
 n + O   = n
 n + S m = S (n + m)
 
- -- syntactic associativity: L
- -- syntactic precedence: 6
 infixl 6 +
 
--- Output: O means False, S O means True
+-- Output: O means False, S _ means True
 isZero :: Nat -> Nat
 isZero O = S O
 isZero (S _) = O
@@ -42,33 +35,27 @@ pred :: Nat -> Nat
 pred O = O
 pred (S n) = n
 
--- Output: O means False, S O means True
+-- Output: O means False, S _ means True
 even :: Nat -> Nat
 even O = S O
 even (S O) = O
 even (S (S n)) = even n
 
-
 odd :: Nat -> Nat
 odd O = O
 odd (S O) = S O
 odd (S (S n)) = odd n
--- This is called the dotminus or monus operator
--- (also: proper subtraction, arithmetic subtraction, ...).
--- It behaves like subtraction, except that it returns 0
--- when "normal" subtraction would return a negative number.
 
-
+-- monus operator
 (-*) :: Nat -> Nat -> Nat
 n -* O = n
-O -* n = O
+O -* _ = O
 S n -* S m = n -* m
 
 infixl 6 -*
 
 monus :: Nat -> Nat -> Nat
 monus = (-*)
-
 
 -- multiplication
 (*) :: Nat -> Nat -> Nat
@@ -79,77 +66,69 @@ infixl 7 *
 
 -- exponentiation
 (^) :: Nat -> Nat -> Nat
-n ^ O = one
+_ ^ O = one
 n ^ S m = n ^ m * n
 
 infixr 8 ^
 
--- decide: infix? ? ^
-
 -- >=
 (>=) :: Nat -> Nat -> Nat
-n >= O = S O 
-O >= S n = O 
-S n >= S m = n >= m -- 
+_ >= O    = S O
+O >= S _  = O
+S n >= S m = n >= m
 
 -- quotient
 (/) :: Nat -> Nat -> Nat
-n / O = undefined
+_ / O = error
 n / m =
   case n >= m of
     O -> O
-    S O -> S ((n -* m)/m)
-
+    S _ -> S ((n -* m) / m)
 
 infixl 7 /
 
 -- remainder
 (%) :: Nat -> Nat -> Nat
-n % O = undefined
+_ % O = error 
 a % b = a -* (b * (a / b))
+
+infixl 7 %
+
 -- divides
--- just for a change, we start by defining the "symbolic" operator
--- and then define `devides` as a synonym to it
--- again, outputs: O means False, S O means True
 (|||) :: Nat -> Nat -> Nat
+_ ||| O = O
 n ||| m =
   case n % m of
     O -> S O
-    S _ -> O
+    S _ -> O 
 
--- x `absDiff` y = |x - y|
--- (Careful here: this - is the actual minus operator we know from the integers!)
-
+-- absDiff
 absDiff :: Nat -> Nat -> Nat
 absDiff = (|-|)
 
 (|-|) :: Nat -> Nat -> Nat
 n |-| m =
   case n >= m of
-    S O -> n -* m
+    S _ -> n -* m
     O -> m -* n
-
 
 fact :: Nat -> Nat
 fact O = one
 fact (S n) = S n * fact n
 
--- signum of a number (-1, 0, or 1)
+-- signum of a number (0 or 1)
 sg :: Nat -> Nat
 sg O = O
 sg (S _) = S O
 
 -- lo b a is the floor of the logarithm base b of a
 lo :: Nat -> Nat -> Nat
-lo _ O = undefined
-lo O _ = undefined
-lo (S O) _ = undefined
+lo _ O = error
+lo O _ = error
+lo (S O) _ = error
 lo x y =
-  case y -* x of
-    O ->
-      case x -* y of
-        O -> one
-        S z -> O
-    z -> S (lo x (y / x))
+  case y >= x of
+    O -> O
+    S _ -> S (lo x (y / x))
 
 infixr 8 `lo`
