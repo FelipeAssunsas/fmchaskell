@@ -2,7 +2,6 @@
 
 module ExNat where
 
--- Do not alter this import!
 import Prelude
     ( Show(..)
     , Eq(..)
@@ -18,55 +17,31 @@ import Prelude
     , otherwise
     )
 
--- Define evenerything that is undefined,
--- without using standard Haskell functions.
--- (Hint: recursion is your friend!)
-
 data Nat where
   O :: Nat
   S :: Nat -> Nat
 
-zero, one, two, three, four, five, six, seven, eight :: Nat
-zero = O
-one = S zero
-two = S one
-three = S two
-four = S three
-five = S four
-six = S five
-seven = S six
-eight = S seven
-
-----------------------------------------------------------------
--- typeclass implementations
-----------------------------------------------------------------
-
 instance Show Nat where
-
-    -- zero  should be shown as O
-    -- three should be shown as SSSO
-    show zero = O
+    show O = "O"
+    show (S n) = "S" ++ show n
 
 instance Eq Nat where
-
-    (==) = undefined
+    O    == O    = True
+    (S m) == (S n) = m == n
+    _    == _    = False
 
 instance Ord Nat where
+    O    <= _    = True
+    (S m) <= O    = False
+    (S m) <= (S n) = m <= n
 
-    (<=) = undefined
+    min O _ = O
+    min _ O = O
+    min (S m) (S n) = S (min m n)
 
-    -- Ord does not REQUIRE defining min and max.
-    -- Howevener, you should define them WITHOUT using (<=).
-    -- Both are binary functions: max m n = ..., etc.
-
-    min = undefined
-
-    max = undefined
-
-
-----------------------------------------------------------------
--- some sugar
-----------------------------------------------------------------
+    max O n = n
+    max m O = m
+    max (S m) (S n) = S (max m n)
 
 zero, one, two, three, four, five, six, seven, eight :: Nat
 zero  = O
@@ -79,122 +54,115 @@ six   = S five
 seven = S six
 eight = S seven
 
-----------------------------------------------------------------
--- internalized predicates
-----------------------------------------------------------------
-
 isZero :: Nat -> Bool
-isZero = undefined
+isZero O = True
+isZero _ = False
 
--- pred is the predecessor but we define zero's to be zero
 pred :: Nat -> Nat
-pred = undefined
+pred O = O
+pred (S n) = n
 
 even :: Nat -> Bool
-even = undefined
+even O = True
+even (S O) = False
+even (S (S n)) = even n
 
 odd :: Nat -> Bool
-odd = undefined
+odd n = not (even n)
 
-
-----------------------------------------------------------------
--- operations
-----------------------------------------------------------------
-
--- addition
 (<+>) :: Nat -> Nat -> Nat
-(<+>) = undefined
+O   <+> n = n
+(S m) <+> n = S (m <+> n)
 
--- This is called the dotminus or monus operator
--- (also: proper subtraction, arithmetic subtraction, ...).
--- It behaves like subtraction, except that it returns 0
--- when "normal" subtraction would return a negative number.
 monus :: Nat -> Nat -> Nat
-monus = undefined
+m `monus` O   = m
+O `monus` _   = O
+(S m) `monus` (S n) = m `monus` n
 
 (-*) :: Nat -> Nat -> Nat
-(-*) = undefined
+(-*) = monus
 
--- multiplication
 times :: Nat -> Nat -> Nat
-times = undefined
+O   `times` _ = O
+(S m) `times` n = n <+> (m `times` n)
 
 (<*>) :: Nat -> Nat -> Nat
 (<*>) = times
 
--- power / exponentiation
 pow :: Nat -> Nat -> Nat
-pow = undefined
+_ `pow` O   = one
+m `pow` (S n) = m <*> (m `pow` n)
 
 exp :: Nat -> Nat -> Nat
-exp = undefined
+exp = pow
 
 (<^>) :: Nat -> Nat -> Nat
-(<^>) = undefined
+(<^>) = pow
 
--- quotient
+m < n = (m <= n) && not (m == n)
+
 (</>) :: Nat -> Nat -> Nat
-(</>) = undefined
+_ </> O = error
+m </> n
+  | m < n     = zero
+  | otherwise = one <+> ((m `monus` n) </> n)
 
--- remainder
 (<%>) :: Nat -> Nat -> Nat
-(<%>) = undefined
+_ <%> O = error
+n <%> m = n `monus` ((n </> m) <*> m)
 
--- euclidean division
 eucdiv :: (Nat, Nat) -> (Nat, Nat)
-eucdiv = undefined
+eucdiv (n, m) = (n </> m, n <%> m)
 
--- divides
 (<|>) :: Nat -> Nat -> Bool
-(<|>) = undefined
+O <|> _ = False
+m <|> n = (n <%> m) == O
 
+divides :: Nat -> Nat -> Bool
 divides = (<|>)
 
-
--- distance between nats
--- x `dist` y = |x - y|
--- (Careful here: this - is the real minus operator!)
 dist :: Nat -> Nat -> Nat
-dist = undefined
+m `dist` n
+  | m <= n    = n `monus` m
+  | otherwise = m `monus` n
 
+(|-|) :: Nat -> Nat -> Nat
 (|-|) = dist
 
 factorial :: Nat -> Nat
-factorial = undefined
+factorial O = one
+factorial (S n) = (S n) <*> factorial n
 
--- signum of a number (-1, 0, or 1)
 sg :: Nat -> Nat
-sg = undefined
+sg O = zero
+sg _ = one
 
--- lo b a is the floor of the logarithm base b of a
 lo :: Nat -> Nat -> Nat
-lo = undefined
-
-
-----------------------------------------------------------------
--- Num & Integral fun
-----------------------------------------------------------------
-
--- For the following functions we need Num(..).
--- Do NOT use the following functions in the definitions above!
+lo b a
+  | b <= one || a < b = zero
+  | otherwise         = one <+> lo b (a </> b)
 
 toNat :: Integral a => a -> Nat
-toNat = undefined
+toNat x
+  | x < 0     = error
+  | x == 0    = O
+  | otherwise = S (toNat (x - 1))
 
 fromNat :: Integral a => Nat -> a
-fromNat = undefined
+fromNat O = 0
+fromNat (S n) = 1 + fromNat n
 
+(<->) :: Nat -> Nat -> Nat
+(<->) = monus
 
--- Voilá: we can now easily make Nat an instance of Num.
 instance Num Nat where
-
     (+) = (<+>)
     (*) = (<*>)
     (-) = (<->)
     abs n = n
     signum = sg
     fromInteger x
-      | x < 0     = undefined
-      | x == 0    = undefined
-      | otherwise = undefined
+      | x < 0     = error
+      | x == 0    = O
+      | otherwise = S (fromInteger (x - 1))
 
