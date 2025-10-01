@@ -33,40 +33,40 @@ instance Enum Bool where
 
     toEnum 0 = False
     toEnum 1 = True
+    -- toEnum _ = error "Invalid value for Bool" -- Opcional: tratar outros casos
 
     fromEnum False = 0
     fromEnum True = 1
 
 -- conjunction (AND)
 (&&) :: Bool -> Bool -> Bool
-(&&) True  && n = n
-(&&) False && _ = False
+True  && n = n
+False && _ = False
 
 infixr 3 &&
 
 -- disjunction (OR)
 (||) :: Bool -> Bool -> Bool
-(||) True  || _ = True
-(||) False || n = n
+True  || _ = True
+False || n = n
 
 infixr 2 ||
 
 -- NAND (Sheffer stroke)
 (/|\) :: Bool -> Bool -> Bool
-(/|\) a /|\ b = not (a && b)
-
+a /|\ b = not (a && b)
 
 infixr 2 /|\
 
 -- NOR (aka: Peirce arrow or Quine dagger)
 (\|/) :: Bool -> Bool -> Bool
-(\|/) a \|/ b = not (a || b)
+a \|/ b = not (a || b)
 
 infixr 2 \|/
 
 -- XOR (exclusive disjunction)
 (<=/=>) :: Bool -> Bool -> Bool
-(<=/=>) a <=/=> b = (a && not b) || (not a && b)
+a <=/=> b = (a && not b) || (not a && b)
 
 infixr 2 <=/=>
 
@@ -77,24 +77,25 @@ not False = True
 
 -- if-then-else expression
 ifThenElse :: Bool -> a -> a -> a
-ifThenElse = undefined
+ifThenElse True  n _ = n
+ifThenElse False _ m = m
 
 -- logical "implies"
 (==>) :: Bool -> Bool -> Bool
-(==>) True ==> False = False
-(==>) _ ==> _ = True 
+True ==> False = False
+_    ==> _    = True
 
 infixr 1 ==>
 
 -- logical "implied by"
 (<==) :: Bool -> Bool -> Bool
-(<==) a <== b = b ==> a
+a <== b = b ==> a
 
 infixl 1 <==
 
 -- logical equivalence
 (<=>) :: Bool -> Bool -> Bool
-(<=>) a <=> b = (a ==> b) && (b ==> a)
+a <=> b = (a ==> b) && (b ==> a)
 
 infixr 1 <=>
 
